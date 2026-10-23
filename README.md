@@ -65,6 +65,15 @@ All business logic (validation, tone → system prompt, context building, title 
 Requires Node.js 18+.
 
 ```bash
+# Quick start (from the project root)
+npm run install:all
+cp server/.env.example server/.env   # fill in MONGODB_URI and at least one API key
+npm run dev                          # starts backend (:5000) and frontend (:5173)
+```
+
+Or run each side separately:
+
+```bash
 # Backend
 cd server
 npm install
