@@ -10,6 +10,7 @@ async function request(path, options) {
 }
 
 export const getTones = () => request('/tones');
+export const getModels = () => request('/models');
 export const getConversations = () => request('/conversations');
 export const getConversation = (id) => request(`/conversations/${id}`);
 export const deleteConversation = (id) => request(`/conversations/${id}`, { method: 'DELETE' });
@@ -18,11 +19,11 @@ export const deleteConversation = (id) => request(`/conversations/${id}`, { meth
  * Sends a chat message and reads the Server-Sent Events stream.
  * Calls onEvent for each event: { type: 'meta' | 'delta' | 'done' | 'error', ... }
  */
-export async function streamChat({ message, tone, conversationId, regenerate, signal, onEvent }) {
+export async function streamChat({ message, tone, model, conversationId, regenerate, signal, onEvent }) {
   const res = await fetch(`${BASE}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, tone, conversationId, regenerate }),
+    body: JSON.stringify({ message, tone, model, conversationId, regenerate }),
     signal,
   });
   if (!res.ok) {

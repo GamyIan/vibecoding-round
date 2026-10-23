@@ -4,7 +4,7 @@ import cors from 'cors';
 import { connectDB } from './config/db.js';
 import chatRoutes from './routes/chat.routes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
-import { isMockMode } from './services/llm.service.js';
+import { getDefaultProvider } from './config/providers.js';
 
 const app = express();
 app.use(cors());
@@ -19,5 +19,7 @@ const PORT = process.env.PORT || 5000;
 await connectDB();
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  if (isMockMode()) console.warn('LLM_API_KEY not set - running in mock mode');
+  const provider = getDefaultProvider();
+  if (provider) console.log(`Default AI provider: ${provider}`);
+  else console.warn('No AI API key set - running in mock mode');
 });

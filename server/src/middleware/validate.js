@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { isValidTone } from '../services/tone.service.js';
+import { isProviderAvailable } from '../config/providers.js';
 
 export const MAX_MESSAGE_LENGTH = 4000;
 
@@ -13,12 +14,15 @@ export function validateObjectId(req, res, next) {
 }
 
 export function validateChatRequest(req, res, next) {
-  const { message, tone, conversationId, regenerate } = req.body ?? {};
+  const { message, tone, model, conversationId, regenerate } = req.body ?? {};
 
   if (conversationId != null && !mongoose.isValidObjectId(conversationId)) {
     return badRequest(res, 'Invalid conversation id');
   }
   if (!isValidTone(tone)) return badRequest(res, 'Invalid tone');
+  if (model != null && !isProviderAvailable(model)) {
+    return badRequest(res, 'Selected model is not available (API key not configured)');
+  }
 
   if (regenerate) {
     if (!conversationId) return badRequest(res, 'conversationId is required to regenerate');

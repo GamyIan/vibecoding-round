@@ -1,8 +1,13 @@
 import Conversation from '../models/Conversation.js';
 import { listTones } from '../services/tone.service.js';
+import { listProviders } from '../config/providers.js';
 
 export function getTones(req, res) {
   res.json(listTones());
+}
+
+export function getModels(req, res) {
+  res.json(listProviders());
 }
 
 export async function listConversations(req, res) {

@@ -2,7 +2,7 @@
 
 A full-stack chat app with real-time streaming responses, persistent conversation history and a tone toggle.
 
-**Stack:** React + Vite (frontend) · Node.js + Express (backend) · MongoDB + Mongoose · OpenAI-compatible Chat Completions API (OpenAI / GitHub Models)
+**Stack:** React + Vite (frontend) · Node.js + Express (backend) · MongoDB + Mongoose · OpenAI Chat Completions API via the official `openai` SDK (OpenAI, Claude, Groq)
 
 ## Features
 
@@ -15,6 +15,7 @@ A full-stack chat app with real-time streaming responses, persistent conversatio
 ### Extra features
 
 1. **AI-generated conversation titles** – after the first exchange the backend asks the model for a short (≤ 6 words) title, so the sidebar shows meaningful thread names instead of "New chat"
+3. **Model switcher** – choose between Groq (free Llama 3.3), OpenAI (GPT-4o mini) and Claude (Haiku). All three use the OpenAI Chat Completions format; a model is enabled only when its API key is configured, and the server validates the choice
 2. **Stop & Regenerate** – stop a response mid-stream (the upstream AI request is aborted and the partial reply is kept), or regenerate the last answer (optionally in a different tone)
 
 ## Architecture
@@ -45,10 +46,11 @@ All business logic (validation, tone → system prompt, context building, title 
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/api/tones` | Available tones |
+| GET | `/api/models` | AI providers and whether each is available (key configured) |
 | GET | `/api/conversations` | Conversation list (title, tone, updatedAt) |
 | GET | `/api/conversations/:id` | Full conversation |
 | DELETE | `/api/conversations/:id` | Delete a conversation |
-| POST | `/api/chat` | `{ message, tone, conversationId?, regenerate? }` → SSE stream of `meta`, `delta`, `done` / `error` events |
+| POST | `/api/chat` | `{ message, tone, model?, conversationId?, regenerate? }` → SSE stream of `meta`, `delta`, `done` / `error` events |
 
 ### Chat request flow
 
@@ -66,7 +68,7 @@ Requires Node.js 18+.
 # Backend
 cd server
 npm install
-cp .env.example .env   # fill in LLM_API_KEY and MONGODB_URI
+cp .env.example .env   # fill in MONGODB_URI and at least one API key
 npm run dev            # http://localhost:5000
 
 # Frontend (new terminal)
@@ -80,6 +82,9 @@ npm run dev            # http://localhost:5173 (proxies /api to the backend)
 | Variable | Description |
 |---|---|
 | `MONGODB_URI` | MongoDB connection string. If empty, an in-memory MongoDB is used (data lost on restart) |
-| `LLM_BASE_URL` | OpenAI-compatible endpoint, e.g. `https://api.openai.com/v1` or `https://models.github.ai/inference` |
-| `LLM_API_KEY` | API key. If empty, the server runs in **mock mode** with canned streamed replies |
-| `LLM_MODEL` | Model name, e.g. `gpt-4o-mini` or `openai/gpt-4o-mini` |
+| `GROQ_API_KEY` | Enables Llama 3.3 70B via Groq's OpenAI-compatible endpoint (free tier) |
+| `OPENAI_API_KEY` | Enables GPT-4o mini via `https://api.openai.com/v1` (paid) |
+| `ANTHROPIC_API_KEY` | Enables Claude Haiku via Anthropic's OpenAI-compatible endpoint (paid) |
+| `GROQ_MODEL` / `OPENAI_MODEL` / `ANTHROPIC_MODEL` | Optional model overrides |
+
+If no API key is set, the server runs in **mock mode** with canned streamed replies. Providers are configured in `server/src/config/providers.js`.

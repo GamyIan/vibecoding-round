@@ -6,6 +6,7 @@ const messageSchema = new mongoose.Schema(
     role: { type: String, enum: ['user', 'assistant'], required: true },
     content: { type: String, required: true },
     tone: { type: String, enum: Object.keys(TONES) },
+    model: { type: String },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

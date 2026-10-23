@@ -7,6 +7,8 @@ const TYPE_INTERVAL = 15;
 export function useChat() {
   const [tones, setTones] = useState([]);
   const [tone, setTone] = useState('professional');
+  const [models, setModels] = useState([]);
+  const [model, setModel] = useState(null);
   const [conversations, setConversations] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -22,6 +24,13 @@ export function useChat() {
 
   useEffect(() => {
     api.getTones().then(setTones).catch((e) => setError(e.message));
+    api
+      .getModels()
+      .then((list) => {
+        setModels(list);
+        setModel(list.find((m) => m.available)?.id ?? null);
+      })
+      .catch((e) => setError(e.message));
     refreshConversations();
   }, [refreshConversations]);
 
@@ -54,6 +63,7 @@ export function useChat() {
         await api.streamChat({
           message,
           tone,
+          model: model ?? undefined,
           conversationId: activeId,
           regenerate,
           signal: controller.signal,
@@ -71,7 +81,7 @@ export function useChat() {
         refreshConversations();
       }
     },
-    [tone, activeId, refreshConversations]
+    [tone, model, activeId, refreshConversations]
   );
 
   const sendMessage = useCallback(
@@ -151,6 +161,9 @@ export function useChat() {
     tones,
     tone,
     setTone,
+    models,
+    model,
+    setModel,
     conversations,
     activeId,
     messages,

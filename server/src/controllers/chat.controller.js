@@ -1,5 +1,6 @@
 import Conversation from '../models/Conversation.js';
 import { streamReply, generateTitle } from '../services/llm.service.js';
+import { getDefaultProvider } from '../config/providers.js';
 
 function sendEvent(res, payload) {
   res.write(`data: ${JSON.stringify(payload)}\n\n`);
@@ -7,11 +8,12 @@ function sendEvent(res, payload) {
 
 /**
  * POST /api/chat
- * Body: { message, tone, conversationId?, regenerate? }
+ * Body: { message, tone, model?, conversationId?, regenerate? }
  * Streams the reply as Server-Sent Events: meta -> delta* -> done | error
  */
 export async function chat(req, res) {
   const { message, tone, conversationId, regenerate } = req.body;
+  const provider = req.body.model ?? getDefaultProvider();
 
   let conversation = conversationId ? await Conversation.findById(conversationId) : new Conversation();
   if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
@@ -43,7 +45,7 @@ export async function chat(req, res) {
 
   let reply = '';
   try {
-    for await (const text of streamReply(conversation.messages, tone, controller.signal)) {
+    for await (const text of streamReply(conversation.messages, tone, provider, controller.signal)) {
       reply += text;
       sendEvent(res, { type: 'delta', text });
     }
@@ -57,10 +59,10 @@ export async function chat(req, res) {
 
   // Persist whatever was generated, including partial replies from a stopped stream
   if (reply) {
-    conversation.messages.push({ role: 'assistant', content: reply, tone });
+    conversation.messages.push({ role: 'assistant', content: reply, tone, model: provider ?? 'mock' });
     const isFirstExchange = conversation.messages.length === 2;
     if (isFirstExchange) {
-      conversation.title = await generateTitle(conversation.messages[0].content, reply);
+      conversation.title = await generateTitle(conversation.messages[0].content, reply, provider);
     }
     await conversation.save();
   }
