@@ -2,10 +2,10 @@
 // A provider is available only when its API key is set in .env.
 export const PROVIDERS = {
   groq: {
-    label: 'Llama 3.3 70B (Groq, free)',
+    label: 'GPT-OSS 20B (OpenAI open model via Groq, free)',
     baseURL: 'https://api.groq.com/openai/v1',
     keyEnv: 'GROQ_API_KEY',
-    model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+    model: process.env.GROQ_MODEL || 'openai/gpt-oss-20b',
   },
   openai: {
     label: 'GPT-4o mini (OpenAI)',

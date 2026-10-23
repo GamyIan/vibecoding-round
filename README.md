@@ -16,7 +16,7 @@ A full-stack chat app with real-time streaming responses, persistent conversatio
 
 1. **AI-generated conversation titles** – after the first exchange the backend asks the model for a short (≤ 6 words) title, so the sidebar shows meaningful thread names instead of "New chat"
 2. **Stop & Regenerate** – stop a response mid-stream (the upstream AI request is aborted and the partial reply is kept), or regenerate the last answer (optionally in a different tone)
-3. **Model switcher** – choose between Groq (free Llama 3.3), OpenAI (GPT-4o mini) and Claude (Haiku). All three use the OpenAI Chat Completions format; a model is enabled only when its API key is configured, and the server validates the choice
+3. **Model switcher** – choose between Groq (free, OpenAI's open-weight GPT-OSS 20B), OpenAI (GPT-4o mini) and Claude (Haiku). All three use the OpenAI Chat Completions format; a model is enabled only when its API key is configured, and the server validates the choice
 
 ## Architecture
 
@@ -91,7 +91,7 @@ npm run dev            # http://localhost:5173 (proxies /api to the backend)
 | Variable | Description |
 |---|---|
 | `MONGODB_URI` | MongoDB connection string. If empty, an in-memory MongoDB is used (data lost on restart) |
-| `GROQ_API_KEY` | Enables Llama 3.3 70B via Groq's OpenAI-compatible endpoint (free tier) |
+| `GROQ_API_KEY` | Enables OpenAI GPT-OSS 20B via Groq's OpenAI-compatible endpoint (free tier) |
 | `OPENAI_API_KEY` | Enables GPT-4o mini via `https://api.openai.com/v1` (paid) |
 | `ANTHROPIC_API_KEY` | Enables Claude Haiku via Anthropic's OpenAI-compatible endpoint (paid) |
 | `GROQ_MODEL` / `OPENAI_MODEL` / `ANTHROPIC_MODEL` | Optional model overrides |
