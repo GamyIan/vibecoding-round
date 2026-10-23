@@ -53,7 +53,7 @@ export async function chat(req, res) {
   } catch (err) {
     if (!controller.signal.aborted) {
       console.error('LLM error:', err.message);
-      sendEvent(res, { type: 'error', message: 'The AI service failed to respond. Please try again.' });
+      sendEvent(res, { type: 'error', message: `The AI service failed to respond: ${err.message}` });
     }
   }
 
