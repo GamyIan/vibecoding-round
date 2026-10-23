@@ -47,6 +47,7 @@ export async function chat(req, res) {
       reply += text;
       sendEvent(res, { type: 'delta', text });
     }
+    if (!reply && !controller.signal.aborted) throw new Error('Empty response from AI service');
   } catch (err) {
     if (!controller.signal.aborted) {
       console.error('LLM error:', err.message);
