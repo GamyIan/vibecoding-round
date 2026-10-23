@@ -15,8 +15,8 @@ A full-stack chat app with real-time streaming responses, persistent conversatio
 ### Extra features
 
 1. **AI-generated conversation titles** – after the first exchange the backend asks the model for a short (≤ 6 words) title, so the sidebar shows meaningful thread names instead of "New chat"
-3. **Model switcher** – choose between Groq (free Llama 3.3), OpenAI (GPT-4o mini) and Claude (Haiku). All three use the OpenAI Chat Completions format; a model is enabled only when its API key is configured, and the server validates the choice
 2. **Stop & Regenerate** – stop a response mid-stream (the upstream AI request is aborted and the partial reply is kept), or regenerate the last answer (optionally in a different tone)
+3. **Model switcher** – choose between Groq (free Llama 3.3), OpenAI (GPT-4o mini) and Claude (Haiku). All three use the OpenAI Chat Completions format; a model is enabled only when its API key is configured, and the server validates the choice
 
 ## Architecture
 
